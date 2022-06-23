@@ -24,7 +24,7 @@ export async function ERC721LibraryInternal(
 		providerOrSigner = getProvider(hyperverse.network);
 	}
 	const base = await EvmLibraryBase(
-		'ERC721',
+		'ERC721Psi',
 		hyperverse,
 		factoryAddress!,
 		FactoryABI,
@@ -68,10 +68,11 @@ export async function ERC721LibraryInternal(
 		}
 	};
 
-	const mint = async (to: string) => {
+
+	const mint = async (to: string, quantity: number) => {
 		try {
 			console.log(base.proxyContract?.signer);
-			const mintTxn = await base.proxyContract?.mint(to);
+			const mintTxn = await base.proxyContract?.mint(to, quantity);
 			return mintTxn.wait() as TransactionReceipt;
 		} catch (error) {
 			throw error;

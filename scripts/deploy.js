@@ -15,13 +15,15 @@ async function main() {
 	console.log('Deploying contracts with the account:', deployer.address);
 	console.log('Account balance:', (await deployer.getBalance()).toString());
 
-	const NFT = await ethers.getContractFactory('ERC721');
-	const nftContract = await NFT.deploy(hyperverseAdmin);
+
+	const NFT = await ethers.getContractFactory('ERC721PsiHyperverse');
+	const nftContract = await NFT.deploy(hyperverseAdmin, "0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc", 3487, "0x6168499c0cFfCaCD319c818142124B7A15E857ab");
 	await nftContract.deployed();
 
-	const NFTFactory = await ethers.getContractFactory('ERC721Factory');
+	const NFTFactory = await ethers.getContractFactory('ERC721PsiFactory');
 	const nftFactoryContract = await NFTFactory.deploy(nftContract.address, hyperverseAdmin);
 	await nftFactoryContract.deployed();
+
 
 	console.log(`[${hre.network.name}] NFT Contract deployed to: ${nftContract.address}`);
 	console.log(`[${hre.network.name}] NFT Factory deployed to: ${nftFactoryContract.address}`);
@@ -36,7 +38,7 @@ async function main() {
 	// Save contract addresses back to file
 	fs.writeJsonSync('contracts.json', env, { spaces: 2 });
 	let proxyAddress = constants.AddressZero;
-	const instanceTnx = await nftFactoryContract.createInstance(deployer.address, 'Test', 'TST');
+	const instanceTnx = await nftFactoryContract.createInstance(deployer.address, 'Neutrino', 'NTRN');
 	instanceTnx.wait();
 	console.log('Instance Created', instanceTnx.hash);
 	while (proxyAddress === constants.AddressZero) {
@@ -46,9 +48,9 @@ async function main() {
 			proxyAddress = constants.AddressZero;
 		}
 	}
+
 }
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+
 main()
 	// .then(() => process.exit(0))
 	.catch((error) => {

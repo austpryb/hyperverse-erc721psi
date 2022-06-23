@@ -7,12 +7,15 @@ import { ERC721Library, ERC721LibraryType } from './erc721Library';
 
 function ERC721State(initialState: { tenantId: string } = { tenantId: '' }) {
 	const { tenantId } = initialState;
+	// console.log(tenantId);
 	const { signer, readOnlyProvider } = useEvm();
+	//console.log(signer);
 	const hyperverse = useHyperverse();
 	const [erc721Library, setERC721Library] = useState<ERC721LibraryType>();
 
 	useEffect(() => {
 		const lib = ERC721Library(hyperverse, signer || readOnlyProvider).then(setERC721Library);
+		//console.log(hyperverse);
 		return () => {
 			return lib.cancel();
 		};
@@ -25,7 +28,6 @@ function ERC721State(initialState: { tenantId: string } = { tenantId: '' }) {
 			erc721Library?.proxyContract
 		);
 	};
-
 	return {
 		...erc721Library,
 		loading: !erc721Library,
@@ -34,8 +36,8 @@ function ERC721State(initialState: { tenantId: string } = { tenantId: '' }) {
 	};
 }
 
-export const ERC721 = createContainer(ERC721State);
+export const ERC721Psi = createContainer(ERC721State);
 
 export function useERC721() {
-	return useContainer(ERC721);
+	return useContainer(ERC721Psi);
 }

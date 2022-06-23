@@ -2,21 +2,21 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
-import './hyperverse/CloneFactory.sol';
-import './hyperverse/IHyperverseModule.sol';
-import './ERC721.sol';
-import './utils/Counters.sol';
+import "./hyperverse/CloneFactory.sol";
+import "./hyperverse/IHyperverseModule.sol";
+import "./ERC721PsiHyperverse.sol";
+import "./utils/Counters.sol";
 
 /**
  * @dev Clone Factory Implementation for ERC20 Token
  */
 
-contract ERC721Factory is CloneFactory {
+contract ERC721PsiFactory is CloneFactory {
 	using Counters for Counters.Counter;
 
 	/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ S T A T E @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 	struct Tenant {
-		ERC721 erc721;
+		ERC721PsiHyperverse erc721;
 		address owner;
 	}
 
@@ -26,7 +26,7 @@ contract ERC721Factory is CloneFactory {
 
 	address public immutable owner;
 	address public immutable masterContract;
-	address private hyperverseAdmin = 0x62a7aa79a52591Ccc62B71729329A80a666fA50f;
+	address private hyperverseAdmin = 0x5e7564d9942F2073d20C6B65d0e73750a6EC8D81;
 
 	/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ E V E N T S @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 
@@ -58,9 +58,19 @@ contract ERC721Factory is CloneFactory {
 	}
 
 	/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ C O N S T R U C T O R @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
-	constructor(address _masterContract, address _owner) {
+	constructor(
+        address _masterContract,
+        address _owner
+		// bytes32 keyHash_,
+		// uint64 subscriptionId_,
+        // address _vrfV2Coordinator
+        )
+        //ERC721PsiHyperverse(_owner, keyHash_, subscriptionId_, _vrfV2Coordinator)
+        {
 		masterContract = _masterContract;
 		owner = _owner;
+        //keyHash = keyHash_;
+		//subscriptionId = subscriptionId_;
 	}
 
 	/*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ F U N C T I O N S @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
@@ -70,11 +80,9 @@ contract ERC721Factory is CloneFactory {
 		string memory _name,
 		string memory _symbol
 	) external isAuthorized(_tenant) hasAnInstance(_tenant) {
-		ERC721 erc721 = ERC721(createClone(masterContract));
-
+		ERC721PsiHyperverse erc721 = ERC721PsiHyperverse(createClone(masterContract));
 		//initializing tenant state of clone
 		erc721.initialize(_name, _symbol, _tenant);
-
 		//set Tenant data
 		Tenant storage newTenant = tenants[_tenant];
 		newTenant.erc721 = erc721;
@@ -85,7 +93,7 @@ contract ERC721Factory is CloneFactory {
 		emit TenantCreated(_tenant, address(erc721));
 	}
 
-	function getProxy(address _tenant) public view returns (ERC721) {
+	function getProxy(address _tenant) public view returns (ERC721PsiHyperverse) {
 				if (!instance[_tenant]) {
 			revert InstanceDoesNotExist();
 		}
